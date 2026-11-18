@@ -15,6 +15,7 @@
  */
 
 import { spawn } from "node:child_process";
+import { once } from "node:events";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { createServer as createHttpServer } from "node:http";
 import { connect as tcpConnect, createServer as createTcpServer } from "node:net";
@@ -1253,7 +1254,11 @@ try {
         electC.said.slice(-240)
     );
 
+    // SIGTERM only requests shutdown. Wait for process exit so both listeners
+    // are released before the stand-in binds the HTTP port.
+    const winnerExited = once(winner, "exit", { signal: AbortSignal.timeout(10_000) });
     winner.kill();
+    await winnerExited;
     squatter = createTcpServer();
     /*
      * Taking the websocket port wins by a wide margin and does not need to be
