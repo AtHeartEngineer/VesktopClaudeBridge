@@ -47,7 +47,7 @@ import {
 let client: BridgeClient | null = null;
 
 /** Use the current Vencord toast API. */
-function toast(message: string, variant: "success" | "critical" | "neutral") {
+function toast(message: string, variant: "success" | "critical" | "default") {
     if (!settings.store.showToasts) return;
     showToast({ text: message, variant });
 }
@@ -119,7 +119,7 @@ function clearQueue() {
     const cleared = clearMarks();
     toast(
         cleared ? `Cleared ${cleared} mark${cleared === 1 ? "" : "s"}` : "Nothing to clear",
-        cleared ? "success" : "neutral"
+        cleared ? "success" : "default"
     );
     client?.notify("marked", { queued: markCount(), cleared });
 }
@@ -236,7 +236,7 @@ function CopyIdsItem(rawMessage: any, channel: BridgeChannel) {
 async function toggleThirdEye() {
     if (isWatching()) {
         const st = stopThirdEye();
-        toast(`Third eye off — ${st.pending} unread discarded`, "neutral");
+        toast(`Third eye off — ${st.pending} unread discarded`, "default");
         return;
     }
 
@@ -292,7 +292,7 @@ function toggleDmPrompts() {
         mode === "allow"
             ? "Claude asks before reading your DMs again"
             : "Claude can read your DMs without asking — stays on until you untick it",
-        "neutral"
+        "default"
     );
 }
 
@@ -566,7 +566,7 @@ export default definePlugin({
                 // the worse failure.
                 toast(
                     `Third eye lapsed after 4h${channel ? ` on #${channel.name}` : ""} — turn it back on if you still want it`,
-                    "neutral"
+                    "default"
                 );
             }
         );
